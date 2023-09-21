@@ -62,7 +62,8 @@ namespace ZXing.Net.Maui
 
 				// Frame by frame analyze
 				imageAnalyzer = new ImageAnalysis.Builder()
-					.SetDefaultResolution(new Android.Util.Size(640, 480))
+					.SetDefaultResolution(new Android.Util.Size(1024, 576))
+                    .SetOutputImageRotationEnabled(true)
 					.SetBackpressureStrategy(ImageAnalysis.StrategyKeepOnlyLatest)
 					.Build();
 
@@ -117,13 +118,27 @@ namespace ZXing.Net.Maui
 
 		public void Focus(Point point)
 		{
+            camera?.CameraControl?.CancelFocusAndMetering();
+            var factory = new SurfaceOrientedMeteringPointFactory(previewView.LayoutParameters.Width, previewView.LayoutParameters.Height);
+            var fpoint = factory.CreatePoint(point.X, point.Y);
 
+            var action = new FocusMeteringAction.Builder(fpoint, FocusMeteringAction.FlagAf)
+                .DisableAutoCancel()
+                .Build();
+
+            camera?.CameraControl?.StartFocusAndMetering(action);
 		}
 
 		public void AutoFocus()
 		{
+            camera?.CameraControl?.CancelFocusAndMetering();
+            
+            var factory = new SurfaceOrientedMeteringPointFactory(1f, 1f);
+            var fpoint = factory.CreatePoint(0.5f, 0.5f);
+            var action = new FocusMeteringAction.Builder(fpoint, FocusMeteringAction.FlagAf).Build();
 
-		}
+            camera?.CameraControl?.StartFocusAndMetering(action);
+        }
 
 		public void Dispose()
 		{
