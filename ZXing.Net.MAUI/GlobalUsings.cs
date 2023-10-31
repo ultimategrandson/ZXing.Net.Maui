@@ -1,8 +1,8 @@
 ﻿#if IOS || MACCATALYST
+global using NativePlatformImage = global::UIKit.UIImage;
+global using NativePlatformImageView = global::UIKit.UIImageView;
 global using NativePlatformCameraPreviewView = global::UIKit.UIView;
 global using NativePlatformView = global::UIKit.UIView;
-global using NativePlatformImageView = global::UIKit.UIImageView;
-global using NativePlatformImage = global::UIKit.UIImage;
 #elif ANDROID
 global using NativePlatformCameraPreviewView = global::AndroidX.Camera.View.PreviewView;
 global using NativePlatformView = global::Android.Views.View;

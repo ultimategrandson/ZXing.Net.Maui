@@ -1,27 +1,34 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Maui;
+using Microsoft.Maui.ApplicationModel;
 using Microsoft.Maui.Graphics;
 using Microsoft.Maui.Handlers;
 using System;
-using System.Linq;
+using System.Threading.Tasks;
+using ZXing.Net.Maui.Readers;
 
 namespace ZXing.Net.Maui
 {
-    public partial class CameraBarcodeReaderViewHandler : ViewHandler<ICameraBarcodeReaderView, NativePlatformCameraPreviewView>
+    public partial class CameraBarcodeReaderViewHandler : ViewHandler<ICameraBarcodeReaderView, NativePlatformCameraPreviewView>, ICameraFrameReceiver
     {
-        public static PropertyMapper<ICameraBarcodeReaderView, CameraBarcodeReaderViewHandler> CameraBarcodeReaderViewMapper = new()
+        public readonly static PropertyMapper<ICameraBarcodeReaderView, CameraBarcodeReaderViewHandler> CameraBarcodeReaderViewMapper = new()
         {
             [nameof(ICameraBarcodeReaderView.Options)] = MapOptions,
             [nameof(ICameraBarcodeReaderView.IsDetecting)] = MapIsDetecting,
-            [nameof(ICameraBarcodeReaderView.IsTorchOn)] = (handler, virtualView) => handler.cameraManager.UpdateTorch(virtualView.IsTorchOn),
-            [nameof(ICameraBarcodeReaderView.CameraLocation)] = (handler, virtualView) => handler.cameraManager.UpdateCameraLocation(virtualView.CameraLocation)
+            [nameof(ICameraBarcodeReaderView.IsTorchOn)] = (handler, virtualView) => handler.cameraManager?.UpdateTorch(virtualView.IsTorchOn),
+            [nameof(ICameraBarcodeReaderView.CameraLocation)] = (handler, virtualView) => handler.cameraManager?.UpdateCameraLocation(virtualView.CameraLocation)
         };
 
-        public static CommandMapper<ICameraBarcodeReaderView, CameraBarcodeReaderViewHandler> CameraBarcodeReaderCommandMapper = new()
+        public readonly static CommandMapper<ICameraBarcodeReaderView, CameraBarcodeReaderViewHandler> CameraBarcodeReaderCommandMapper = new()
         {
             [nameof(ICameraBarcodeReaderView.Focus)] = MapFocus,
             [nameof(ICameraBarcodeReaderView.AutoFocus)] = MapAutoFocus,
         };
+
+        private CameraManager? cameraManager;
+        private Readers.IBarcodeReader? barcodeReader;
+        private bool stopping;
+        private bool started;
 
         public CameraBarcodeReaderViewHandler() : base(CameraBarcodeReaderViewMapper, CameraBarcodeReaderCommandMapper)
         {
@@ -32,50 +39,69 @@ namespace ZXing.Net.Maui
         {
         }
 
-        CameraManager cameraManager;
+        protected Readers.IBarcodeReader BarcodeReader => barcodeReader ??= (Services?.GetService<Readers.IBarcodeReader>() ?? throw new Exception("Barcode reader service missing."));
 
-        Readers.IBarcodeReader barcodeReader;
-
-        protected Readers.IBarcodeReader BarcodeReader
-            => barcodeReader ??= Services.GetService<Readers.IBarcodeReader>();
+        private Readers.IBarcodeReader GetBarcodeReader() => Services?.GetService<Readers.IBarcodeReader>() ?? throw new Exception("Barcode reader service missing.");
 
         protected override NativePlatformCameraPreviewView CreatePlatformView()
         {
-            if (cameraManager == null)
-                cameraManager = new(MauiContext, VirtualView?.CameraLocation ?? CameraLocation.Rear);
-            var v = cameraManager.CreateNativeView();
-            return v;
+            cameraManager ??= new(MauiContext ?? throw new Exception("Context required"), VirtualView?.CameraLocation ?? CameraLocation.Rear, this);
+            return cameraManager.CreateNativeView();
         }
 
-        protected override async void ConnectHandler(NativePlatformCameraPreviewView nativeView)
+        public async Task StartAsync()
         {
-            base.ConnectHandler(nativeView);
+            if (started || cameraManager == null)
+                return;
 
-            if (await cameraManager.CheckPermissions())
+            started = false;
+            stopping = false;
+
+            var result = await Permissions.RequestAsync<Permissions.Camera>();
+
+            if (result == PermissionStatus.Granted)
+            {
                 cameraManager.Connect();
+                started = true;
+            }
+            else
+                throw new PermissionException("Camera permissions required.");
+        }
 
-            cameraManager.FrameReady += CameraManager_FrameReady;
+        public void Stop()
+        {
+            started = false;
+            stopping = true;
+            cameraManager?.Disconnect();
         }
 
         protected override void DisconnectHandler(NativePlatformCameraPreviewView nativeView)
         {
-            cameraManager.FrameReady -= CameraManager_FrameReady;
-
-            cameraManager.Disconnect();
+            if (started)
+                Stop();
 
             base.DisconnectHandler(nativeView);
         }
 
-        private void CameraManager_FrameReady(object sender, CameraFrameBufferEventArgs e)
+        public async void OnReceiveFrame(PixelBufferHolder data)
         {
-            VirtualView?.FrameReady(e);
-
-            if (VirtualView.IsDetecting)
+            try
             {
-                var barcodes = BarcodeReader.Decode(e.Data);
+                var vv = VirtualView;
+                vv.OnReceiveFrame(data);
 
-                if (barcodes?.Any() ?? false)
-                    VirtualView?.BarcodesDetected(new BarcodeDetectionEventArgs(barcodes));
+                if (vv.IsDetecting)
+                {
+                    var barcodes = await GetBarcodeReader().DecodeAsync(data);
+
+                    if (barcodes.Length > 0)
+                        vv.OnBarcodesDetected(barcodes);
+                }
+            }
+            catch
+            {
+                if (!stopping) // If its stopping, just ignore any errors.
+                    throw;
             }
         }
 
@@ -94,7 +120,7 @@ namespace ZXing.Net.Maui
         public static void MapFocus(CameraBarcodeReaderViewHandler handler, ICameraBarcodeReaderView cameraBarcodeReaderView, object? parameter)
         {
             if (parameter is not Point point)
-                throw new ArgumentException("Invalid parameter", "point");
+                throw new ArgumentException("Invalid parameter", nameof(parameter));
 
             handler.Focus(point);
         }

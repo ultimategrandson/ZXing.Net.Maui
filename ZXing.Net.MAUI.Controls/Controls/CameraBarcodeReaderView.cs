@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ZXing.Net.Maui;
+using ZXing.Net.Maui.Readers;
 
 namespace ZXing.Net.Maui.Controls
 {
@@ -15,8 +16,9 @@ namespace ZXing.Net.Maui.Controls
 		public event EventHandler<BarcodeDetectionEventArgs> BarcodesDetected;
 		public event EventHandler<CameraFrameBufferEventArgs> FrameReady;
 
-		void ICameraBarcodeReaderView.BarcodesDetected(BarcodeDetectionEventArgs e) => BarcodesDetected?.Invoke(this, e);
-		void ICameraFrameAnalyzer.FrameReady(ZXing.Net.Maui.CameraFrameBufferEventArgs e) => FrameReady?.Invoke(this, e);
+		void ICameraBarcodeReaderView.OnBarcodesDetected(BarcodeResult[] barcodes) => BarcodesDetected?.Invoke(this, new BarcodeDetectionEventArgs(barcodes));
+		
+        void ICameraFrameReceiver.OnReceiveFrame(PixelBufferHolder data) => FrameReady?.Invoke(this, new CameraFrameBufferEventArgs(data));
 
 		public static readonly BindableProperty OptionsProperty =
 			BindableProperty.Create(nameof(Options), typeof(BarcodeReaderOptions), typeof(CameraBarcodeReaderView), defaultValueCreator: bindableObj => new BarcodeReaderOptions());
@@ -35,9 +37,6 @@ namespace ZXing.Net.Maui.Controls
 			get => (bool)GetValue(IsDetectingProperty);
 			set => SetValue(IsDetectingProperty, value);
 		}
-
-		void Handler_FrameReady(object sender, CameraFrameBufferEventArgs e)
-			=> FrameReady?.Invoke(this, e);
 
 		public static readonly BindableProperty IsTorchOnProperty =
 			BindableProperty.Create(nameof(IsTorchOn), typeof(bool), typeof(CameraBarcodeReaderView), defaultValue: false);
@@ -62,6 +61,10 @@ namespace ZXing.Net.Maui.Controls
 
 		public void Focus(Point point)
 			=> StrongHandler?.Invoke(nameof(Focus), point);
+
+        public Task StartAsync() => StrongHandler?.StartAsync();
+
+        public void Stop() => StrongHandler?.Stop();
 
 		CameraBarcodeReaderViewHandler StrongHandler
 			=> Handler as CameraBarcodeReaderViewHandler;

@@ -1,25 +1,22 @@
-﻿using System;
-using Microsoft.Maui;
+﻿using Microsoft.Maui;
 using Microsoft.Maui.Graphics;
-using System;
+using ZXing.Net.Maui.Readers;
 
 namespace ZXing.Net.Maui
 {
-	public interface ICameraFrameAnalyzer
-	{
-		void FrameReady(CameraFrameBufferEventArgs args);
-	}
+    public interface ICameraFrameReceiver
+    {
+        void OnReceiveFrame(PixelBufferHolder data);
+    }
 
-	public interface ICameraView : IView, ICameraFrameAnalyzer
-	{
-		CameraLocation CameraLocation { get; set; }
+    public interface ICameraView : IView, ICameraFrameReceiver
+    {
+        CameraLocation CameraLocation { get; set; }
 
-		//CameraMode Mode { get; set; }
+        void AutoFocus();
 
-		void AutoFocus();
+        void Focus(Point point);
 
-		void Focus(Point point);
-
-		bool IsTorchOn { get; set; }
-	}
+        bool IsTorchOn { get; set; }
+    }
 }

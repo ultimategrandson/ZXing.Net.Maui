@@ -1,8 +1,8 @@
 ﻿namespace ZXing.Net.Maui
 {
-	public enum CameraLocation
-	{
-		Rear,
-		Front
-	}
+    public enum CameraLocation
+    {
+        Rear,
+        Front
+    }
 }

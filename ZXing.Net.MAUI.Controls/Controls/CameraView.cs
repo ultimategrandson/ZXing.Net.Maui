@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Graphics;
-using System;
+using ZXing.Net.Maui.Readers;
 
 namespace ZXing.Net.Maui.Controls
 {
@@ -9,8 +9,8 @@ namespace ZXing.Net.Maui.Controls
 	{
 		public event EventHandler<CameraFrameBufferEventArgs> FrameReady;
 
-		void ICameraFrameAnalyzer.FrameReady(CameraFrameBufferEventArgs e)
-			=> FrameReady?.Invoke(this, e);
+		void ICameraFrameReceiver.OnReceiveFrame(PixelBufferHolder data)
+			=> FrameReady?.Invoke(this, new CameraFrameBufferEventArgs(data));
 
 		public static readonly BindableProperty IsTorchOnProperty =
 			BindableProperty.Create(nameof(IsTorchOn), typeof(bool), typeof(CameraView), defaultValue: true);
