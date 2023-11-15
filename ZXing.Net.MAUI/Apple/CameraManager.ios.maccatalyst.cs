@@ -34,7 +34,7 @@ namespace ZXing.Net.Maui
                 VideoGravity = AVLayerVideoGravity.ResizeAspectFill,
             };
 
-            view = new PreviewView(videoPreviewLayer);
+            view = new PreviewView(this, videoPreviewLayer);
             return view;
         }
 
@@ -143,6 +143,19 @@ namespace ZXing.Net.Maui
             }
         }
 
+        public void ResetTorch()
+        {
+            try
+            {
+                if (captureDevice != null && captureDevice.HasTorch && captureDevice.TorchAvailable && captureDevice.TorchActive)
+                    CaptureDevicePerformWithLockedConfiguration(() => captureDevice.TorchMode = AVCaptureTorchMode.On);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
         public void UpdateTorch(bool on)
         {
             if (captureDevice != null && captureDevice.HasTorch && captureDevice.TorchAvailable)
@@ -230,14 +243,16 @@ namespace ZXing.Net.Maui
 
     class PreviewView : UIView
     {
-        public PreviewView(AVCaptureVideoPreviewLayer layer) : base()
+        public PreviewView(CameraManager cameraManager, AVCaptureVideoPreviewLayer layer) : base()
         {
+            _cameraManager = cameraManager;
             PreviewLayer = layer;
 
             PreviewLayer.Frame = Layer.Bounds;
             Layer.AddSublayer(PreviewLayer);
         }
 
+        private readonly CameraManager _cameraManager;
         public readonly AVCaptureVideoPreviewLayer PreviewLayer;
 
         public override void LayoutSubviews()
@@ -259,6 +274,7 @@ namespace ZXing.Net.Maui
                     _ => AVCaptureVideoOrientation.Portrait
                 };
 
+            _cameraManager.ResetTorch();
             PreviewLayer.Frame = Layer.Bounds;
         }
     }
