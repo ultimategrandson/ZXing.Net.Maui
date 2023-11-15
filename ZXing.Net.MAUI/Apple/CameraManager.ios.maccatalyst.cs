@@ -26,12 +26,12 @@ namespace ZXing.Net.Maui
         {
             captureSession = new AVCaptureSession
             {
-                SessionPreset = AVCaptureSession.Preset640x480
+                SessionPreset = AVCaptureSession.Preset640x480,
             };
 
             videoPreviewLayer = new(captureSession)
             {
-                VideoGravity = AVLayerVideoGravity.ResizeAspectFill
+                VideoGravity = AVLayerVideoGravity.ResizeAspectFill,
             };
 
             view = new PreviewView(videoPreviewLayer);
@@ -55,21 +55,17 @@ namespace ZXing.Net.Maui
 
                 videoDataOutput.WeakVideoSettings = videoSettings;
 
-                if (captureDelegate == null)
+                captureDelegate ??= new CaptureDelegate
                 {
-                    captureDelegate = new CaptureDelegate
-                    {
-                        SampleProcessor = cvPixelBuffer =>
-                            CameraFrameReceiver.OnReceiveFrame(new Readers.PixelBufferHolder
-                            {
-                                Data = cvPixelBuffer,
-                                Size = new MSize(cvPixelBuffer.Width, cvPixelBuffer.Height)
-                            })
-                    };
-                }
+                    SampleProcessor = cvPixelBuffer =>
+                        CameraFrameReceiver.OnReceiveFrame(new Readers.PixelBufferHolder
+                        {
+                            Data = cvPixelBuffer,
+                            Size = new MSize(cvPixelBuffer.Width, cvPixelBuffer.Height)
+                        })
+                };
 
-                if (dispatchQueue == null)
-                    dispatchQueue = new DispatchQueue("CameraBufferQueue");
+                dispatchQueue ??= new DispatchQueue("CameraBufferQueue");
 
                 videoDataOutput.AlwaysDiscardsLateVideoFrames = true;
                 videoDataOutput.SetSampleBufferDelegate(captureDelegate, dispatchQueue);
@@ -112,6 +108,7 @@ namespace ZXing.Net.Maui
 
                 captureDevice = cameraDiscovery.Devices.FirstOrDefault() ?? AVCaptureDevice.GetDefaultDevice(AVMediaTypes.Video) ?? throw new Exception("No device");
                 captureInput = new AVCaptureDeviceInput(captureDevice, out var err);
+
                 captureSession.AddInput(captureInput);
                 captureSession.StartRunning();
             }
@@ -213,6 +210,7 @@ namespace ZXing.Net.Maui
                 return;
 
             var focusMode = AVCaptureFocusMode.AutoFocus;
+
             if (captureDevice.IsFocusModeSupported(AVCaptureFocusMode.ContinuousAutoFocus))
                 focusMode = AVCaptureFocusMode.ContinuousAutoFocus;
 
@@ -220,6 +218,7 @@ namespace ZXing.Net.Maui
             {
                 if (captureDevice.FocusPointOfInterestSupported)
                     captureDevice.FocusPointOfInterest = CoreGraphics.CGPoint.Empty;
+
                 captureDevice.FocusMode = focusMode;
             });
         }
@@ -244,24 +243,22 @@ namespace ZXing.Net.Maui
         public override void LayoutSubviews()
         {
             base.LayoutSubviews();
-            CATransform3D transform = CATransform3D.MakeRotation(0, 0, 0, 1.0f);
-            switch (UIDevice.CurrentDevice.Orientation)
-            {
-                case UIDeviceOrientation.Portrait:
-                    transform = CATransform3D.MakeRotation(0, 0, 0, 1.0f);
-                    break;
-                case UIDeviceOrientation.PortraitUpsideDown:
-                    transform = CATransform3D.MakeRotation((nfloat)Math.PI, 0, 0, 1.0f);
-                    break;
-                case UIDeviceOrientation.LandscapeLeft:
-                    transform = CATransform3D.MakeRotation((nfloat)(-Math.PI / 2), 0, 0, 1.0f);
-                    break;
-                case UIDeviceOrientation.LandscapeRight:
-                    transform = CATransform3D.MakeRotation((nfloat)Math.PI / 2, 0, 0, 1.0f);
-                    break;
-            }
 
-            PreviewLayer.Transform = transform;
+            var avSession = PreviewLayer.Session;
+
+            if (avSession == null)
+                return;
+
+            foreach (var avConnection in avSession.Connections)
+                avConnection.VideoOrientation = Window.WindowScene?.InterfaceOrientation switch
+                {
+                    UIInterfaceOrientation.Portrait => AVCaptureVideoOrientation.Portrait,
+                    UIInterfaceOrientation.PortraitUpsideDown => AVCaptureVideoOrientation.PortraitUpsideDown,
+                    UIInterfaceOrientation.LandscapeRight => AVCaptureVideoOrientation.LandscapeRight,
+                    UIInterfaceOrientation.LandscapeLeft => AVCaptureVideoOrientation.LandscapeLeft,
+                    _ => AVCaptureVideoOrientation.Portrait
+                };
+
             PreviewLayer.Frame = Layer.Bounds;
         }
     }
