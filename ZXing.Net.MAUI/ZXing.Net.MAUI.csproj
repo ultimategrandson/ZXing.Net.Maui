@@ -33,7 +33,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="ZXing.Net" Version="0.16.9" />
-		<PackageReference Include="GitInfo" Version="3.3.3" PrivateAssets="all" />
+		<PackageReference Include="GitInfo" Version="3.3.5" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -90,10 +90,10 @@
 	</Target>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.61" />
+	  <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.70" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.61" />
+	  <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.70" />
 	</ItemGroup>
 </Project>
