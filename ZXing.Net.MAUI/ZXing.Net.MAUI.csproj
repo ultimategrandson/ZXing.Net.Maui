@@ -90,10 +90,10 @@
 	</Target>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.82" />
+	  <PackageReference Include="Microsoft.Maui.Controls" Version="8.0.90" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.82" />
+	  <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.90" />
 	</ItemGroup>
 </Project>
