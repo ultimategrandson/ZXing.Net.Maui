@@ -33,29 +33,22 @@
 #define ENABLE_CAMERA_PLACEHOLDER
 #define FORCE_FRAMES_AT_PREVIEW_RESOLUTION
 
-using System;
-using Microsoft.Maui;
-using Microsoft.Maui.Handlers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Maui.Controls.PlatformConfiguration;
-using static Microsoft.Maui.ApplicationModel.Permissions;
-using Microsoft.UI.Xaml.Controls;
-using System.Diagnostics;
-using Microsoft.UI.Xaml;
-using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml.Markup;
+using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Windows.Devices.Enumeration;
 using Windows.Graphics.Imaging;
-using Windows.Media.Capture.Frames;
 using Windows.Media.Capture;
+using Windows.Media.Capture.Frames;
 using Windows.Media.Devices;
 using Windows.Media.MediaProperties;
-using Microsoft.UI.Dispatching;
-using System.Linq;
 
 namespace ZXing.Net.Maui
 {

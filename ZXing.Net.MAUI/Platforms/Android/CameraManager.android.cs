@@ -39,7 +39,7 @@ namespace ZXing.Net.Maui
 
                 // Preview
                 cameraPreview = new AndroidX.Camera.Core.Preview.Builder().Build();
-                cameraPreview.SetSurfaceProvider(previewView.SurfaceProvider);
+                cameraPreview.SetSurfaceProvider(cameraExecutor, previewView.SurfaceProvider);
 
                 // Frame by frame analyze
                 imageAnalyzer = new ImageAnalysis.Builder()

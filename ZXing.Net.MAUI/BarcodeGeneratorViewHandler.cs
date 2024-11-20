@@ -49,10 +49,10 @@ namespace ZXing.Net.Maui
 #if IOS || MACCATALYST
             imageView ??= new NativePlatformImageView { BackgroundColor = UIKit.UIColor.Clear };
 #elif ANDROID
-			imageView = new NativePlatformImageView(Context);
-			imageView.SetBackgroundColor(Android.Graphics.Color.Transparent);
+            imageView = new NativePlatformImageView(Context);
+            imageView.SetBackgroundColor(Android.Graphics.Color.Transparent);
 #elif WINDOWS
-			imageView = new NativePlatformImageView();
+            imageView = new NativePlatformImageView();
 #endif
             return imageView;
         }
@@ -80,7 +80,7 @@ namespace ZXing.Net.Maui
 #if IOS || MACCATALYST
                 imageView.Image = image;
 #elif ANDROID
-			    imageView.SetImageBitmap(image);
+                imageView.SetImageBitmap(image);
 #elif WINDOWS
                 imageView.Source = image;
 #else

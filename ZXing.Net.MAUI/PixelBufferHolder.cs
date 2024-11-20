@@ -9,15 +9,16 @@ namespace ZXing.Net.Maui.Readers
         public
 
 #if ANDROID
-		Java.Nio.ByteBuffer?
+        Java.Nio.ByteBuffer?
 #elif IOS || MACCATALYST
-		CoreVideo.CVPixelBuffer?
+        CoreVideo.CVPixelBuffer?
 #elif WINDOWS
-		Windows.Graphics.Imaging.SoftwareBitmap?
+        Windows.Graphics.Imaging.SoftwareBitmap?
 #else
-		byte[]?
+        byte[]?
 #endif
 
-        Data { get; init; }
+        Data
+        { get; init; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using AVFoundation;
-using CoreAnimation;
 using CoreFoundation;
 using CoreVideo;
 using Foundation;

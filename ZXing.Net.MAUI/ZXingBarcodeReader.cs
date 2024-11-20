@@ -37,11 +37,11 @@ namespace ZXing.Net.Maui.Readers
             LuminanceSource ls;
 
 #if ANDROID
-			ls = new ByteBufferYUVLuminanceSource(image.Data, w, h, 0, 0, w, h);
+            ls = new ByteBufferYUVLuminanceSource(image.Data, w, h, 0, 0, w, h);
 #elif MACCATALYST || IOS
             ls = new CVPixelBufferBGRA32LuminanceSource(image.Data, w, h);
 #elif WINDOWS
-			ls = new SoftwareBitmapLuminanceSource(image.Data);
+            ls = new SoftwareBitmapLuminanceSource(image.Data);
 #else
             throw new NotSupportedException();
 #endif

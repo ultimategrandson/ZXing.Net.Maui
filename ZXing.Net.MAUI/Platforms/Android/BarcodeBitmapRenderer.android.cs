@@ -40,7 +40,7 @@ namespace ZXing.Net.Maui
 
         public Bitmap Render(BitMatrix matrix, ZXing.BarcodeFormat format, string content)
             => Render(matrix, format, content, new EncodingOptions());
-        
+
         public Bitmap Render(BitMatrix matrix, ZXing.BarcodeFormat format, string content, EncodingOptions options)
         {
             var width = matrix.Width;
