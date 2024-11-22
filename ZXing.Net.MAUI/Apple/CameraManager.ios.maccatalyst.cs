@@ -4,6 +4,7 @@ using CoreVideo;
 using Foundation;
 using System;
 using System.Linq;
+using System.Threading;
 using UIKit;
 using MSize = Microsoft.Maui.Graphics.Size;
 
@@ -19,7 +20,7 @@ namespace ZXing.Net.Maui
         private AVCaptureVideoPreviewLayer? videoPreviewLayer;
         private CaptureDelegate? captureDelegate;
         private DispatchQueue? dispatchQueue;
-        private readonly object _configLock = new();
+        private readonly Lock _configLock = new();
 
         public NativePlatformCameraPreviewView CreateNativeView()
         {

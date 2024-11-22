@@ -694,9 +694,9 @@ namespace ZXing.Net.Maui
 
 #if ENABLE_DEVICE_WATCHER
         //Device Watcher
-        private static DeviceWatcher _watcher;
+        private static DeviceWatcher? _watcher;
         private static readonly List<CameraManager> _activeCameras = new();
-        private static readonly object _watcherLock = new();
+        private static readonly Lock _watcherLock = new();
 
         private static void RegisterWatcher(CameraManager cameraManager)
         {
@@ -706,6 +706,7 @@ namespace ZXing.Net.Maui
                 {
                     _activeCameras.Add(cameraManager);
                 }
+
                 if (_watcher == null)
                 {
                     var deviceSelector = MediaFrameSourceGroup.GetDeviceSelector();
