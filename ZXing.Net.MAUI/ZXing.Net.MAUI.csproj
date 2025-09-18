@@ -27,9 +27,9 @@
 	  <CreatePackage>false</CreatePackage>
 	</PropertyGroup>
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-		<PackageReference Include="Xamarin.AndroidX.Camera.Camera2" Version="1.4.0.1" />
-		<PackageReference Include="Xamarin.AndroidX.Camera.Lifecycle" Version="1.4.0.1" />
-		<PackageReference Include="Xamarin.AndroidX.Camera.View" Version="1.4.0.1" />
+		<PackageReference Include="Xamarin.AndroidX.Camera.Camera2" Version="1.4.2.3" />
+		<PackageReference Include="Xamarin.AndroidX.Camera.Lifecycle" Version="1.4.2.3" />
+		<PackageReference Include="Xamarin.AndroidX.Camera.View" Version="1.4.2.3" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="ZXing.Net" Version="0.16.10" />
@@ -90,10 +90,10 @@
 	</Target>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.40" />
+	  <PackageReference Include="Microsoft.Maui.Controls" Version="9.0.110" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.40" />
+	  <PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="9.0.110" />
 	</ItemGroup>
 </Project>
