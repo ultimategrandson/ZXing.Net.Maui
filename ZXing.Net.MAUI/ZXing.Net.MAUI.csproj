@@ -28,13 +28,13 @@
 	  <CreatePackage>false</CreatePackage>
 	</PropertyGroup>
 	<ItemGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-		<PackageReference Include="Xamarin.AndroidX.Camera.Camera2" Version="1.4.2.3" />
-		<PackageReference Include="Xamarin.AndroidX.Camera.Lifecycle" Version="1.4.2.3" />
-		<PackageReference Include="Xamarin.AndroidX.Camera.View" Version="1.4.2.3" />
+		<PackageReference Include="Xamarin.AndroidX.Camera.Camera2" Version="1.6.2" />
+		<PackageReference Include="Xamarin.AndroidX.Camera.Lifecycle" Version="1.6.2" />
+		<PackageReference Include="Xamarin.AndroidX.Camera.View" Version="1.6.2" />
 	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="ZXing.Net" Version="0.16.11" />
-		<PackageReference Include="GitInfo" Version="3.6.0" PrivateAssets="all" />
+		<PackageReference Include="GitInfo" Version="3.6.1" PrivateAssets="all" />
 	</ItemGroup>
 
 	<ItemGroup>
